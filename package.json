@@ -1,7 +1,7 @@
 {
-  "name": "appointment",
+  "name": "aggregator",
   "version": "1.0.0",
-  "main": "appoinment_scheduling.js",
+  "main": "aggregator_serveice.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

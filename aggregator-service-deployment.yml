@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aggregator-deployment
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aggregator-service
+  template:
+    metadata:
+      labels:
+        app: aggregator-service
+    spec:
+      containers:
+      - name: aggregator-service
+        image: 794038257645.dkr.ecr.ap-southeast-1.amazonaws.com/ecr-repo-aggregator:latest
+        ports:
+          - containerPort: 3003
+        env:
+          - name: PORT
+            value: "3003"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aggregator-service-service
+  namespace: production
+spec:
+  type: LoadBalancer
+  selector:
+    app: aggregator-service
+  ports:
+    - port: 80
+      targetPort: 3003

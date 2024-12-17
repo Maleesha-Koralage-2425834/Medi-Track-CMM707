@@ -3,5 +3,5 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-EXPOSE 3002
-CMD ["node", "appoinment_scheduling.js"]
+EXPOSE 3003
+CMD ["node", "aggregator_serveice.js"]
