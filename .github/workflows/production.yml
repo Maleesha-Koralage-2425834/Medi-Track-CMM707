@@ -60,7 +60,7 @@ jobs:
       # Push the Docker image to Amazon ECR
       - name: Push Docker Image to ECR
         run: |
-          docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:$GITHUB_SHA"
+          docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:latest"
 
       # # Identify branch and setup files to deploy
       # - name: Check for green branch and set RELEASE env variable
