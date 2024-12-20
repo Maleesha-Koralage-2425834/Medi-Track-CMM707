@@ -73,6 +73,17 @@ app.use((req, res, next) => {
 let pool;
 
 async function startServer() {
+
+    //health check
+    app.get('/get_status', async (req, res) => {
+      try {
+         
+          res.status(200).json({"status": "patient service is running"});
+      } catch (err) {
+          console.error(err);
+          res.status(500).json({"status": "patient service error "});
+      }
+    });
   pool = await createDbPool(); 
 
 app.post('/add_patient', async (req, res) => {
