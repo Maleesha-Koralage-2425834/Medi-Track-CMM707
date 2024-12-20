@@ -63,11 +63,11 @@ jobs:
           docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:latest"
 
       # # Identify branch and setup files to deploy
-      # - name: Check for green branch and set RELEASE env variable
-      #   if: ${{ contains(github.ref, 'green') }}
-      #   run: |
-      #     echo "RELEASE=green" >> $GITHUB_ENV
-      #     echo "${RELEASE} release will be deployed"
+      - name: Check for green branch and set RELEASE env variable
+        if: ${{ contains(github.ref, 'green') }}
+        run: |
+          echo "RELEASE=green" >> $GITHUB_ENV
+          echo "${RELEASE} release will be deployed"
 
       # # Deploy the Docker image to the EKS cluster
       # - name: Deploy to EKS
