@@ -57,10 +57,10 @@ jobs:
         run: |
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com"
 
-      # # Push the Docker image to Amazon ECR
-      # - name: Push Docker Image to ECR
-      #   run: |
-      #     docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:$GITHUB_SHA"
+      # Push the Docker image to Amazon ECR
+      - name: Push Docker Image to ECR
+        run: |
+          docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:$GITHUB_SHA"
 
       # # Identify branch and setup files to deploy
       # - name: Check for green branch and set RELEASE env variable
