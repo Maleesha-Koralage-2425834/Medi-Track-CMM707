@@ -1,0 +1,19 @@
+{
+  "name": "notification",
+  "version": "1.0.0",
+  "main": "notification_service.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.714.0",
+    "@aws-sdk/credential-provider-node": "^3.714.0",
+    "axios": "^1.7.9",
+    "express": "^4.21.2",
+    "moment": "^2.30.1",
+    "pg": "^8.13.1"
+  }
+}
