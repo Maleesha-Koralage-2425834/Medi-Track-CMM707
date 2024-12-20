@@ -11,6 +11,8 @@ env:
   DEPLOYMENT_NAME: patient-service-deployment 
   IMAGE: ecr-repo-patient
   RELEASE: blue
+  #CONTAINER: patient-service
+  
 
 jobs:
   setup-build-publish-deploy:
@@ -24,7 +26,14 @@ jobs:
 
       # Configure AWS credentials
       - name: Configure AWS Credentials
+        # run: |
+        #   echo "retreiving secrets"
+        #   echo ${{ secrets.AWS_ACCESS_KEY_ID }}
+        #   echo ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        #   echo ${{ env.AWS_REGION }}
+        #   echo "retreiving success"
         uses: aws-actions/configure-aws-credentials@v3
+          
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -39,7 +48,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build \
-            --tag "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:$GITHUB_SHA" \
+            --tag "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:latest" \
             --build-arg GITHUB_SHA="$GITHUB_SHA" \
             --build-arg GITHUB_REF="$GITHUB_REF" \
             --build-arg K8APPVERSION="$GITHUB_SHA" \
@@ -53,9 +62,9 @@ jobs:
       # Push the Docker image to Amazon ECR
       - name: Push Docker Image to ECR
         run: |
-          docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:$GITHUB_SHA"
+          docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:latest"
 
-      # Identify branch and setup files to deploy
+      # # Identify branch and setup files to deploy
       - name: Check for green branch and set RELEASE env variable
         if: ${{ contains(github.ref, 'green') }}
         run: |
@@ -65,21 +74,24 @@ jobs:
       # Deploy the Docker image to the EKS cluster
       - name: Deploy to EKS
         run: |
-          kubectl set image deployment/$DEPLOYMENT_NAME-$RELEASE \
-            $DEPLOYMENT_NAME="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:$GITHUB_SHA" -n default
-          kubectl rollout status deployment/$DEPLOYMENT_NAME-$RELEASE -n default
-          kubectl get services -n default
+          kubectl set image deployment/$DEPLOYMENT_NAME \
+            patient-service="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:latest" -n production
+          kubectl rollout status deployment/$DEPLOYMENT_NAME -n production
+          kubectl get services -n production
+
 
       # Check if green release is present or not
       - name: Check if green release is present
         run: |
-          echo "IS_GREEN_DEPLOYED=$(if [ "$(kubectl get pod -l app=satellite-prod-v1 -o jsonpath='{.items}')" = "[]" ]; then echo "false"; else echo "true"; fi)" >> $GITHUB_ENV
-
+          echo "IS_GREEN_DEPLOYED=$(if [ "$(kubectl get pod -l app=$DEPLOYMENT_NAME-v1 -o jsonpath='{.items}')" = "[]" ]; then echo "false"; else echo "true"; fi)" >> $GITHUB_ENV
+     
+      
       # Create blue/green release and modify traffic weight
       - name: Create blue/green release and modify traffic
         if: ${{ env.IS_GREEN_DEPLOYED == 'true' }}
         run: |
           kubectl set image deployment/$DEPLOYMENT_NAME-${RELEASE} \
-            $DEPLOYMENT_NAME="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:$GITHUB_SHA" -n default
+            patient-service="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$IMAGE:latest" -n production
           echo "Created service and switched traffic"
+
 
