@@ -37,10 +37,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # # Authenticate kubectl with EKS
-      # - name: Authenticate kubectl with EKS
-      #   run: |
-      #     aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
+      # Authenticate kubectl with EKS
+      - name: Authenticate kubectl with EKS
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
 
       # # Build the Docker image
       # - name: Build Docker Image
