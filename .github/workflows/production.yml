@@ -80,11 +80,12 @@ jobs:
           kubectl get services -n production
 
 
-      # # Check if green release is present or not
-      # - name: Check if green release is present
-      #   run: |
-      #     echo "IS_GREEN_DEPLOYED=$(if [ "$(kubectl get pod -l app=satellite-prod-v1 -o jsonpath='{.items}')" = "[]" ]; then echo "false"; else echo "true"; fi)" >> $GITHUB_ENV
-
+      # Check if green release is present or not
+      - name: Check if green release is present
+        run: |
+          echo "IS_GREEN_DEPLOYED=$(if [ "$(kubectl get pod -l app=$DEPLOYMENT_NAME-v1 -o jsonpath='{.items}')" = "[]" ]; then echo "false"; else echo "true"; fi)" >> $GITHUB_ENV
+     
+      
       # # Create blue/green release and modify traffic weight
       # - name: Create blue/green release and modify traffic
       #   if: ${{ env.IS_GREEN_DEPLOYED == 'true' }}
